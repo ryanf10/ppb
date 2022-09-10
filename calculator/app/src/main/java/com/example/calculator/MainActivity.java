@@ -9,11 +9,11 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import com.udojava.evalex.Expression;
+import org.mariuszgromada.math.mxparser.Expression;
+import org.mariuszgromada.math.mxparser.mXparser;
 
 public class MainActivity extends AppCompatActivity {
     private ImageButton btnBackspace;
@@ -99,17 +99,14 @@ public class MainActivity extends AppCompatActivity {
         this.btnCalculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    Expression expression = new Expression((String) txtResult.getText());
-                    BigDecimal eval = expression.eval();
-                    DecimalFormat df = (DecimalFormat) DecimalFormat.getInstance();
-                    df.setMinimumFractionDigits(0);
-                    df.setMaximumFractionDigits(10);
-                    txtResult.setText(df.format(eval));
-                } catch (Expression.ExpressionException e) {
-                    Toast.makeText(getApplicationContext(), "Mohon periksa input anda", Toast.LENGTH_LONG).show();
-                    System.out.println(e);
-                }
+                Expression e = new org.mariuszgromada.math.mxparser.Expression();
+                e.setExpressionString((String) txtResult.getText());
+                mXparser.consolePrintln((String) txtResult.getText());
+                DecimalFormat df = (DecimalFormat) DecimalFormat.getInstance();
+                df.setMinimumFractionDigits(0);
+                df.setMaximumFractionDigits(10);
+                df.setGroupingUsed(false);
+                txtResult.setText(df.format(e.calculate()));
             }
         });
 
