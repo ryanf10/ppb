@@ -1,19 +1,18 @@
 package com.example.calculator;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.mariuszgromada.math.mxparser.Expression;
 import org.mariuszgromada.math.mxparser.mXparser;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private ImageButton btnBackspace;
@@ -116,12 +115,18 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 StringBuilder str = new StringBuilder((String) txtResult.getText());
                 if (str.length() > 0) {
-                    txtResult.setText(str.deleteCharAt(str.length() - 1).toString());
+                    if (((String) txtResult.getText()).contains("NaN")) {
+                        txtResult.setText("");
+                    } else {
+                        txtResult.setText(str.deleteCharAt(str.length() - 1).toString());
+                    }
                 }
             }
         });
 
-        this.btnErase = (Button) findViewById(R.id.btnErase);
+        this.btnErase = (Button)
+
+                findViewById(R.id.btnErase);
         this.btnErase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
