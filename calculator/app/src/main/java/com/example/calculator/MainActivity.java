@@ -17,15 +17,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     private ImageButton btnBackspace;
     private TextView txtResult;
-    private ArrayList<Button> btnNumbers = new ArrayList<>();
-    private Button btnDot;
-    private Button btnOpenParentheses;
-    private Button btnCloseParentheses;
+    private ArrayList<Button> btnNumpads = new ArrayList<>();
     private Button btnErase;
-    private Button btnAddition;
-    private Button btnSubtraction;
-    private Button btnDivision;
-    private Button btnMultiplication;
     private Button btnCalculate;
 
     @Override
@@ -36,63 +29,30 @@ public class MainActivity extends AppCompatActivity {
 
         this.txtResult = (TextView) findViewById(R.id.txtResult);
 
-        for (int i = 0; i <= 9; i++) {
+        for (int i = 0; i <= 9; i++){
             String btnId = "btn" + i;
             Button btn = ((Button) findViewById(getResources().getIdentifier(btnId, "id", getPackageName())));
-            int num = i;
-            btn.setOnClickListener(new View.OnClickListener() {
+            btnNumpads.add(btn);
+        }
+
+        btnNumpads.add((Button) findViewById(R.id.btnDot));
+        btnNumpads.add((Button) findViewById(R.id.btnOpenParentheses));
+        btnNumpads.add((Button) findViewById(R.id.btnCloseParentheses));
+        btnNumpads.add((Button) findViewById(R.id.btnAddition));
+        btnNumpads.add((Button) findViewById(R.id.btnSubtraction));
+        btnNumpads.add((Button) findViewById(R.id.btnDivision));
+        btnNumpads.add((Button) findViewById(R.id.btnMultiplication));
+
+        for (int i = 0; i < btnNumpads.size(); i++){
+            Button temp = btnNumpads.get(i);
+            temp.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String now = txtResult.getText().toString() + num;
+                    String now = txtResult.getText().toString() + temp.getText().toString();
                     txtResult.setText(now);
                 }
             });
         }
-
-        this.btnDot = (Button) findViewById(R.id.btnDot);
-        this.btnDot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String now = txtResult.getText().toString() + ".";
-                txtResult.setText(now);
-            }
-        });
-
-        this.btnAddition = (Button) findViewById(R.id.btnAddition);
-        this.btnAddition.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String now = txtResult.getText().toString() + "+";
-                txtResult.setText(now);
-            }
-        });
-
-        this.btnSubtraction = (Button) findViewById(R.id.btnSubtraction);
-        this.btnSubtraction.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String now = txtResult.getText().toString() + "-";
-                txtResult.setText(now);
-            }
-        });
-
-        this.btnDivision = (Button) findViewById(R.id.btnDivision);
-        this.btnDivision.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String now = txtResult.getText().toString() + "/";
-                txtResult.setText(now);
-            }
-        });
-
-        this.btnMultiplication = (Button) findViewById(R.id.btnMultiplication);
-        this.btnMultiplication.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String now = txtResult.getText().toString() + "*";
-                txtResult.setText(now);
-            }
-        });
 
         this.btnCalculate = (Button) findViewById(R.id.btnCalculate);
         this.btnCalculate.setOnClickListener(new View.OnClickListener() {
@@ -124,9 +84,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        this.btnErase = (Button)
-
-                findViewById(R.id.btnErase);
+        this.btnErase = (Button) findViewById(R.id.btnErase);
         this.btnErase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,21 +92,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        this.btnOpenParentheses = (Button) findViewById(R.id.btnOpenParentheses);
-        this.btnOpenParentheses.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String now = txtResult.getText().toString() + "(";
-                txtResult.setText(now);
-            }
-        });
-        this.btnCloseParentheses = (Button) findViewById(R.id.btnCloseParentheses);
-        this.btnCloseParentheses.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String now = txtResult.getText().toString() + ")";
-                txtResult.setText(now);
-            }
-        });
     }
 }
