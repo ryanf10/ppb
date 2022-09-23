@@ -1,25 +1,23 @@
 package com.example.contact;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     private SQLiteDatabase db;
     private SQLiteOpenHelper openHelper;
-    private EditText nama, noHp;
-    private Button simpan;
+    private EditText search;
     private LinearLayout data;
 
     @Override
@@ -27,22 +25,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.nama = (EditText) findViewById(R.id.nama);
-        this.noHp = (EditText) findViewById(R.id.noHp);
-        this.data = (LinearLayout) findViewById(R.id.data);
-
-        this.simpan = (Button) findViewById(R.id.simpan);
-        this.simpan.setOnClickListener(new View.OnClickListener() {
+        this.search = (EditText) findViewById(R.id.search);
+        this.search.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View view) {
-                ContentValues data = new ContentValues();
-                data.put("nama", nama.getText().toString());
-                data.put("no_hp", noHp.getText().toString());
-                db.insert("contact", null, data);
-                Toast.makeText(getApplicationContext(), "Data tersimpan", Toast.LENGTH_SHORT).show();
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 readData();
             }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
         });
+
+        this.data = (LinearLayout) findViewById(R.id.data);
+
 
     }
 
@@ -67,6 +69,11 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
     }
 
+    public void create(View v) {
+        Intent intent = new Intent(getBaseContext(), CreateActivity.class);
+        startActivity(intent);
+    }
+
 
     @Override
     protected void onStop() {
@@ -76,7 +83,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void readData() {
-        Cursor cursor = this.db.rawQuery("select id, nama, no_hp from contact;", null);
+        Cursor cursor;
+        String keyword = this.search.getText().toString();
+        if (!keyword.isEmpty()) {
+            cursor = this.db.rawQuery("SELECT id, nama, no_hp FROM contact WHERE nama LIKE '%" + keyword + "%' OR no_hp LIKE '%" + keyword + "%'", null);
+        } else {
+            cursor = this.db.rawQuery("select id, nama, no_hp from contact;", null);
+        }
         data.removeAllViews();
         if (cursor.getCount() > 0) {
             data.addView(this.addDivider());
