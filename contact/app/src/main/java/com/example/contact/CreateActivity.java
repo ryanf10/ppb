@@ -48,6 +48,7 @@ public class CreateActivity extends AppCompatActivity {
                 data.put("no_hp", noHp.getText().toString());
                 db.insert("contact", null, data);
                 Toast.makeText(getApplicationContext(), "Data tersimpan", Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
     }

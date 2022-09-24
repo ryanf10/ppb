@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                 TextView textViewNama = new TextView(this);
                 textViewNama.setText(name);
                 textViewNama.setTextColor(getResources().getColor(R.color.purple_700));
-
+                textViewNama.setTypeface(null, Typeface.BOLD);
 
                 TextView textViewNoHp = new TextView(this);
                 textViewNoHp.setText(phone);
@@ -136,8 +137,8 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout divider = new LinearLayout(this);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         divider.setLayoutParams(params);
-        divider.setMinimumHeight(5);
-        divider.setBackgroundColor(getResources().getColor(R.color.purple_200));
+        divider.setMinimumHeight(2);
+        divider.setBackgroundColor(getResources().getColor(R.color.black));
         return divider;
     }
 }
