@@ -1,9 +1,6 @@
 package com.example.contact;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,11 +12,15 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.contact.model.Contact;
+import com.example.contact.repository.ContactRepository;
+
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
-    private SQLiteDatabase db;
-    private SQLiteOpenHelper openHelper;
     private EditText search;
     private LinearLayout data;
+    private ContactRepository contactRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,28 +46,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         this.data = (LinearLayout) findViewById(R.id.data);
-
+        this.contactRepository = new ContactRepository(getApplicationContext());
 
     }
 
     @Override
     protected void onStart() {
-        openHelper = new SQLiteOpenHelper(getApplicationContext(), "db.sqlite", null, 1) {
-            @Override
-            public void onCreate(SQLiteDatabase sqLiteDatabase) {
-
-            }
-
-            @Override
-            public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
-            }
-        };
-
-        this.db = openHelper.getWritableDatabase();
-        this.db.execSQL("CREATE TABLE IF NOT EXISTS contact(id INTEGER PRIMARY KEY AUTOINCREMENT,nama TEXT, no_hp TEXT)");
         this.readData();
-
         super.onStart();
     }
 
@@ -75,61 +61,42 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
-    @Override
-    protected void onStop() {
-        this.db.close();
-        this.openHelper.close();
-        super.onStop();
-    }
-
     private void readData() {
-        Cursor cursor;
         String keyword = this.search.getText().toString();
-        if (!keyword.isEmpty()) {
-            cursor = this.db.rawQuery("SELECT id, nama, no_hp FROM contact WHERE nama LIKE '%" + keyword + "%' OR no_hp LIKE '%" + keyword + "%'", null);
-        } else {
-            cursor = this.db.rawQuery("select id, nama, no_hp from contact;", null);
-        }
+        ArrayList<Contact> contacts = this.contactRepository.getAll(keyword);
         data.removeAllViews();
-        if (cursor.getCount() > 0) {
+        for (Contact contact : contacts) {
+            int id = contact.getId();
+            String name = contact.getNama();
+            String phone = contact.getNoHp();
+            LinearLayout kontak = new LinearLayout(this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            kontak.setOrientation(LinearLayout.VERTICAL);
+            kontak.setPadding(50, 50, 50, 50);
+
+            TextView textViewNama = new TextView(this);
+            textViewNama.setText(name);
+            textViewNama.setTextColor(getResources().getColor(R.color.purple_700));
+            textViewNama.setTypeface(null, Typeface.BOLD);
+
+            TextView textViewNoHp = new TextView(this);
+            textViewNoHp.setText(phone);
+            textViewNoHp.setTextColor(getResources().getColor(R.color.purple_200));
+
+            kontak.addView(textViewNama);
+            kontak.addView(textViewNoHp);
+
+            kontak.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getBaseContext(), EditActivity.class);
+                    intent.putExtra("id", String.valueOf(id));
+                    startActivity(intent);
+                }
+            });
+
+            data.addView(kontak);
             data.addView(this.addDivider());
-            while (cursor.moveToNext()) {
-                System.out.println(cursor.toString());
-                String id = cursor.getString(0);
-                String name = cursor.getString(1);
-                String phone = cursor.getString(2);
-
-                LinearLayout kontak = new LinearLayout(this);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                kontak.setOrientation(LinearLayout.VERTICAL);
-                kontak.setPadding(50, 50, 50, 50);
-
-
-                TextView textViewNama = new TextView(this);
-                textViewNama.setText(name);
-                textViewNama.setTextColor(getResources().getColor(R.color.purple_700));
-                textViewNama.setTypeface(null, Typeface.BOLD);
-
-                TextView textViewNoHp = new TextView(this);
-                textViewNoHp.setText(phone);
-                textViewNoHp.setTextColor(getResources().getColor(R.color.purple_200));
-
-                kontak.addView(textViewNama);
-                kontak.addView(textViewNoHp);
-
-                kontak.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(getBaseContext(), EditActivity.class);
-                        intent.putExtra("id", id);
-                        startActivity(intent);
-                    }
-                });
-
-                data.addView(kontak);
-                data.addView(this.addDivider());
-            }
         }
     }
 
