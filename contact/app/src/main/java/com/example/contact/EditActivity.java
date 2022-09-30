@@ -35,6 +35,10 @@ public class EditActivity extends AppCompatActivity {
         this.simpan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (nama.getText().toString().isEmpty() || noHp.getText().toString().isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Mohon isi semua field", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 contact.setNama(nama.getText().toString());
                 contact.setNoHp(noHp.getText().toString());
                 contactRepository.update(contact);

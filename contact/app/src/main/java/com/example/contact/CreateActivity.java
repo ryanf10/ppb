@@ -33,6 +33,10 @@ public class CreateActivity extends AppCompatActivity {
         this.simpan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (nama.getText().toString().isEmpty() || noHp.getText().toString().isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Mohon isi semua field", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Contact contact = new Contact(nama.getText().toString(), noHp.getText().toString());
                 contactRepository.insert(contact);
                 Toast.makeText(getApplicationContext(), "Data tersimpan", Toast.LENGTH_SHORT).show();

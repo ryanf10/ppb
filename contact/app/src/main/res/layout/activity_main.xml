@@ -22,7 +22,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
 
@@ -39,22 +39,15 @@
                 android:hint="Search"
                 android:drawableLeft="@drawable/search"
                 android:drawablePadding="5dp" />
-
         </LinearLayout>
 
-        <ScrollView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="20dp">
+            android:scrollbars="vertical"
+            android:layout_marginVertical="5dp" />
 
-            <LinearLayout
-                android:id="@+id/data"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-            </LinearLayout>
-        </ScrollView>
     </LinearLayout>
 
 

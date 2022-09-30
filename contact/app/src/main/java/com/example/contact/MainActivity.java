@@ -1,16 +1,17 @@
 package com.example.contact;
 
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.contact.model.Contact;
 import com.example.contact.repository.ContactRepository;
@@ -19,8 +20,15 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private EditText search;
-    private LinearLayout data;
+    //    private LinearLayout data;
     private ContactRepository contactRepository;
+    private RecyclerView recyclerView;
+
+    private static ArrayList<Contact> contacts;
+
+    public static ArrayList<Contact> getContacts() {
+        return contacts;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +53,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        this.data = (LinearLayout) findViewById(R.id.data);
+//        this.data = (LinearLayout) findViewById(R.id.data);
         this.contactRepository = new ContactRepository(getApplicationContext());
+        this.recyclerView = findViewById(R.id.rview);
+        this.setAdapter();
 
     }
 
@@ -61,43 +71,18 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void setAdapter() {
+        ContactListRecyclerAdapter contactListRecyclerAdapter = new ContactListRecyclerAdapter();
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+        this.recyclerView.setLayoutManager(layoutManager);
+        this.recyclerView.setItemAnimator(new DefaultItemAnimator());
+        this.recyclerView.setAdapter(contactListRecyclerAdapter);
+    }
+
     private void readData() {
         String keyword = this.search.getText().toString();
-        ArrayList<Contact> contacts = this.contactRepository.getAll(keyword);
-        data.removeAllViews();
-        for (Contact contact : contacts) {
-            int id = contact.getId();
-            String name = contact.getNama();
-            String phone = contact.getNoHp();
-            LinearLayout kontak = new LinearLayout(this);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            kontak.setOrientation(LinearLayout.VERTICAL);
-            kontak.setPadding(50, 50, 50, 50);
-
-            TextView textViewNama = new TextView(this);
-            textViewNama.setText(name);
-            textViewNama.setTextColor(getResources().getColor(R.color.purple_700));
-            textViewNama.setTypeface(null, Typeface.BOLD);
-
-            TextView textViewNoHp = new TextView(this);
-            textViewNoHp.setText(phone);
-            textViewNoHp.setTextColor(getResources().getColor(R.color.purple_200));
-
-            kontak.addView(textViewNama);
-            kontak.addView(textViewNoHp);
-
-            kontak.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(getBaseContext(), EditActivity.class);
-                    intent.putExtra("id", String.valueOf(id));
-                    startActivity(intent);
-                }
-            });
-
-            data.addView(kontak);
-            data.addView(this.addDivider());
-        }
+        contacts = this.contactRepository.getAll(keyword);
+        this.setAdapter();
     }
 
     private LinearLayout addDivider() {
