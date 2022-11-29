@@ -1,15 +1,11 @@
 package com.example.googlemaps;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
 
-import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
-import android.os.AsyncTask;
-import android.os.Build;
+import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,24 +18,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.googlemaps.databinding.ActivityMapsBinding;
-import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -47,7 +32,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ActivityMapsBinding binding;
     private Button btnGo, btnCari;
     private EditText lat, lng, zoom, namaLokasi;
-    private ArrayList markerPoints= new ArrayList();
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -110,26 +94,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
                 closeKeyboard(view);
-                Geocoder g = new Geocoder(getBaseContext());
-                try {
-                    List<Address> daftar =
-                            g.getFromLocationName(namaLokasi.getText().toString(), 1);
-                    if (daftar.size() > 0) {
-                        Address address = daftar.get(0);
-                        String nemuAlamat = address.getAddressLine(0);
-                        Double lintang = address.getLatitude();
-                        Double bujur = address.getLongitude();
-                        goToPeta(lintang, bujur, 16);
-
-                        lat.setText(lintang.toString());
-                        lng.setText(bujur.toString());
-
-                        Toast.makeText(getBaseContext(), "Location " + nemuAlamat, Toast.LENGTH_LONG).show();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+                goCari(namaLokasi.getText().toString());
             }
         });
     }
@@ -153,6 +118,29 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(its, 16));
     }
 
+    private void goCari(String namaLokasi){
+        Geocoder g = new Geocoder(getBaseContext());
+        try {
+            List<Address> daftar =
+                    g.getFromLocationName(namaLokasi, 1);
+            if (daftar.size() > 0) {
+                Address address = daftar.get(0);
+                String nemuAlamat = address.getAddressLine(0);
+                Double lintang = address.getLatitude();
+                Double bujur = address.getLongitude();
+                goToPeta(lintang, bujur, 16);
+
+
+                lat.setText(lintang.toString());
+                lng.setText(bujur.toString());
+                Toast.makeText(getBaseContext(), "Location " + nemuAlamat, Toast.LENGTH_SHORT).show();
+                hitungJarakDariIts(lintang, bujur);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void goToPeta(double lat, double lng, int zoom) {
         LatLng newLoc = new LatLng(lat, lng);
         mMap.addMarker(new MarkerOptions().position(newLoc).title(""));
@@ -163,4 +151,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         InputMethodManager a = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         a.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
+
+    private void hitungJarakDariIts(double latTujuan, double lngTujuan){
+        hitungJarak(-7.282518, 112.795026, latTujuan, lngTujuan, "Jarak dari ITS");
+    }
+
+    private void hitungJarak(double latAsal, Double lngAsal,
+                             double latTujuan, double lngTujuan, String keterangan) {
+        Location asal = new Location("asal");
+        Location tujuan = new Location("tujuan");
+        tujuan.setLatitude(latTujuan);
+        tujuan.setLongitude(lngTujuan);
+        asal.setLatitude(latAsal);
+        asal.setLongitude(lngAsal);
+
+        float jarak = (float) asal.distanceTo(tujuan) / 1000;
+        String jaraknya = String.valueOf(jarak);
+        Toast.makeText(getBaseContext(), keterangan + ": " + jaraknya + " km ",
+                Toast.LENGTH_SHORT).show();
+    }
+
 }
